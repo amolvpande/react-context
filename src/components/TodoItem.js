@@ -1,13 +1,21 @@
 import React, { useState } from "react";
-import "../App.css";
 
 const TodoItem = ({ todo, onUpdate, onDelete }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedTodoText, setEditedTodoText] = useState(todo.text);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleUpdate = () => {
-    onUpdate(todo.id, { ...todo, text: editedTodoText });
-    setIsEditing(false);
+    const trimmedText = editedTodoText.trim();
+    if (trimmedText === "") {
+      setErrorMessage("*Todo text cannot be blank.");
+    } else if (trimmedText.includes(" ")) {
+      setErrorMessage("Todo text cannot contain only spaces.");
+    } else {
+      onUpdate(todo.id, { ...todo, text: trimmedText });
+      setIsEditing(false);
+      setErrorMessage("");
+    }
   };
 
   return (
@@ -35,6 +43,7 @@ const TodoItem = ({ todo, onUpdate, onDelete }) => {
           </button>
         </>
       )}
+      {errorMessage && <p className="error-message">{errorMessage}</p>}
     </div>
   );
 };

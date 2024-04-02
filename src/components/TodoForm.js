@@ -3,16 +3,23 @@ import { TodoContext } from "../TodoContext";
 
 const TodoForm = () => {
   const [text, setText] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const { addTodo } = useContext(TodoContext);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (text.trim() !== "") {
+    const trimmedText = text.trim();
+    if (trimmedText === "") {
+      setErrorMessage("*Todo text cannot be blank.");
+    } else if (trimmedText.includes(" ")) {
+      setErrorMessage("*Todo text cannot contain spaces.");
+    } else {
       addTodo({
         id: Date.now(),
-        text,
+        text: trimmedText,
       });
       setText("");
+      setErrorMessage("");
     }
   };
 
@@ -25,6 +32,7 @@ const TodoForm = () => {
         placeholder="Add todo..."
       />
       <button type="submit">Add</button>
+      {errorMessage && <p className="error-message">{errorMessage}</p>}
     </form>
   );
 };
